@@ -21,7 +21,7 @@ graph = parser.Parse(path);
 var buses = parser.buses;
 graph.MarkUnavailableNodes(buses, startTime);
 var result = graph.FindMinTimeRoad(startNodeN, endNodeN);
-var (cost, route) = graph.FindCheapestRoad(startNodeN, endNodeN, buses);
+var (cost, route) = graph.FindCheapestRoad(startNodeN, endNodeN, buses, startTime);
 
 Console.WriteLine();
 Console.WriteLine(result);

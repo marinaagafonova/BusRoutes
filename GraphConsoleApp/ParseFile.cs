@@ -22,9 +22,16 @@ namespace GraphConsoleApp
 
             for (int i=0; i<NBuses; i++)
             {
-                var stops = lines[4 + i * 2].Split(' ').ToList().Select(int.Parse).ToList();
-                stops = stops.Skip(1).ToList();
-                var timesStops = lines[5 + i * 2].Split(' ').ToList().Select(int.Parse).ToList();
+                var info = lines[4 + i].Split(' ').Select(int.Parse).ToList();
+                int NStops = info[0];
+                var stops = new List<int>();
+                var timeStops = new List<int>();
+                
+                for(int j = 1; j < 1 + NStops; j++)
+                    stops.Add(info[j]);
+                for(int j = NStops + 1; j < info.Count; j++)
+                    timeStops.Add(info[j]);
+
                 for (int j = 1; j < stops.Count; j++)
                 {
                     var nodeIndex = graph.nodes.FindIndex(node => node.number == stops[j - 1]);
@@ -35,7 +42,7 @@ namespace GraphConsoleApp
                         var child = new Node(stops[j]);
                         node.children.Add(child);
                         graph.nodes.Add(node);
-                        graph.edges.Add(new Edge(node, child, timesStops[j - 1]));
+                        graph.edges.Add(new Edge(node, child, timeStops[j - 1]));
                     }
                     else
                     {
@@ -44,7 +51,7 @@ namespace GraphConsoleApp
                         {
                             var child = new Node(stops[j]);
                             graph.nodes[nodeIndex].children.Add(child);
-                            graph.edges.Add(new Edge(graph.nodes[nodeIndex], child, timesStops[j - 1]));
+                            graph.edges.Add(new Edge(graph.nodes[nodeIndex], child, timeStops[j - 1]));
                         }
                     }                
                 }
@@ -52,14 +59,14 @@ namespace GraphConsoleApp
                 lastnode.buses.Add(i);
                 lastnode.children.Add(graph.nodes[0]);
                 graph.nodes.Add(lastnode);
-                graph.edges.Add(new Edge(lastnode, graph.nodes[0], timesStops[stops.Count - 1]));
+                graph.edges.Add(new Edge(lastnode, graph.nodes[0], timeStops[stops.Count - 1]));
 
                 buses.Add(new Bus()
                 {
                     startTime = TimeOnly.Parse(times[i]),
                     price = Convert.ToInt32(prices[i]),
                     Stops = stops,
-                    Time = timesStops,
+                    Time = timeStops,
                 });
             }
             return graph;

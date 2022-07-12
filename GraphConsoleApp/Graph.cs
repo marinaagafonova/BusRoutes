@@ -101,6 +101,8 @@ namespace GraphConsoleApp
         public string FindMinTimeRoad(int startN, int endN)
         {
             var track = Prim(startN, endN);
+            if (track.Count == 0)
+                return "No available routes";
             string output = "Fastest track: ";
             foreach (Edge edge in track)
                 output += edge.n1.number.ToString() + "-";
@@ -123,7 +125,7 @@ namespace GraphConsoleApp
             }
         }
 
-        public (string, string) FindCheapestRoad(int startN, int endN, List<Bus> buses)
+        public (string, string) FindCheapestRoad(int startN, int endN, List<Bus> buses, TimeOnly startTime)
         {
             string output = "Cheapest track: ";
 
@@ -131,7 +133,7 @@ namespace GraphConsoleApp
             var end = nodes[nodes.FindIndex(n => n.number == endN)];
 
             int sum = int.MaxValue;
-            int busId = 0;
+            int busId = -1;
 
             for (int i = 0; i < start.buses.Count; i++)
             {
@@ -139,7 +141,7 @@ namespace GraphConsoleApp
                 {
                     if (start.buses[i] == end.buses[j])
                     {
-                        if (sum > buses[i].price)
+                        if (sum > buses[i].price && buses[i].startTime <= startTime)
                         {
                             sum = buses[i].price;
                             busId = i;
@@ -147,6 +149,9 @@ namespace GraphConsoleApp
                     }
                 }
             }
+
+            if (busId == -1)
+                return ("No available routes", "");
 
             var index1 = buses[busId].Stops.IndexOf(startN);
             var index2 = buses[busId].Stops.IndexOf(endN);
